@@ -67,20 +67,40 @@ class GoogleBaseManager:
             version (str): API 버전
             scope (list): API 스코프
             attempt_retry (int, optional): 재시도 횟수. 기본값은 3
-            json_folder (str, optional): 서비스 계정 키 파일이 있는 폴더 경로. 기본값은 None (labs_modules가 있는 폴더의 .secret 폴더)
+            json_folder (str, optional): 서비스 계정 키 파일이 있는 폴더 경로. 기본값은 None
+        
+        Raises:
+            FileNotFoundError: JSON 키 파일을 찾을 수 없는 경우
+            
+        Example:
+            >>> # 기본 폴더 사용 (프로젝트 루트의 .secret 폴더)
+            >>> manager = GoogleDriveManager()
+            
+            >>> # 커스텀 폴더 지정
+            >>> manager = GoogleDriveManager(json_folder='/path/to/credentials')
         """
+        # JSON 폴더 경로 설정
         if json_folder is None:
+            # 기본값: 프로젝트 루트의 .secret 폴더
             current_dir = os.path.dirname(os.path.abspath(__file__))
             json_folder = os.path.join(os.path.dirname(os.path.dirname(current_dir)), '.secret')
 
         json_folder = os.path.abspath(json_folder)
+        
+        # JSON 폴더 존재 여부 확인
+        if not os.path.exists(json_folder):
+            error_msg = self._format_json_folder_not_found_error(json_folder)
+            raise FileNotFoundError(error_msg)
+        
+        # JSON 파일 검색
         self.json_files = glob.glob(os.path.join(json_folder, '*.json'))
         self.service_name = service_name
         self.version = version
         self.scope = scope
 
         if not self.json_files:
-            raise FileNotFoundError(f"No .json files found in {json_folder}")
+            error_msg = self._format_no_json_files_error(json_folder)
+            raise FileNotFoundError(error_msg)
 
         # Pre-build services in parallel for faster startup, then rotate by swapping.
         _service_pool_list = self._initialize_service_pool_parallel(self.json_files)
@@ -94,6 +114,105 @@ class GoogleBaseManager:
         self.current_index = 0
         self.cycle_sleep_duration = 30  # Sleep duration in seconds after each full cycle
         self._build_next_service()
+
+    def _format_json_folder_not_found_error(self, json_folder):
+        """JSON 폴더를 찾을 수 없을 때 친절한 오류 메시지 생성"""
+        return f"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🔑 Google API 인증 키 폴더를 찾을 수 없습니다                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 찾으려고 시도한 경로:
+   {json_folder}
+
+❌ 문제:
+   위 경로에 폴더가 존재하지 않습니다.
+
+✅ 해결 방법:
+
+1. 기본 경로를 사용하는 경우 (.secret 폴더):
+   
+   # 프로젝트 루트에 .secret 폴더를 생성하세요
+   mkdir -p .secret
+   
+   # Google Cloud Console에서 다운로드한 JSON 키 파일을 이동하세요
+   mv ~/Downloads/your-service-account-key.json .secret/
+
+2. 커스텀 경로를 사용하는 경우:
+   
+   # 폴더를 생성하고 JSON 키 파일을 넣으세요
+   mkdir -p /your/custom/path
+   mv ~/Downloads/your-service-account-key.json /your/custom/path/
+   
+   # 코드에서 경로를 지정하세요
+   manager = GoogleDriveManager(json_folder='/your/custom/path')
+
+📘 Google Cloud 서비스 계정 키 발급 방법:
+
+1. Google Cloud Console 접속: https://console.cloud.google.com
+2. IAM 및 관리자 → 서비스 계정 메뉴로 이동
+3. 서비스 계정 생성 또는 기존 계정 선택
+4. '키' 탭 → '키 추가' → 'JSON' 선택
+5. 다운로드된 JSON 파일을 .secret 폴더에 이동
+
+⚠️  보안 주의사항:
+   - JSON 키 파일은 절대 Git에 커밋하지 마세요!
+   - .gitignore에 .secret/ 폴더가 추가되어 있는지 확인하세요
+   
+🔗 자세한 내용: https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+"""
+
+    def _format_no_json_files_error(self, json_folder):
+        """JSON 파일이 없을 때 친절한 오류 메시지 생성"""
+        return f"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🔑 JSON 키 파일을 찾을 수 없습니다                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 검색한 폴더:
+   {json_folder}
+
+❌ 문제:
+   폴더는 존재하지만 .json 확장자를 가진 파일이 없습니다.
+
+✅ 해결 방법:
+
+1. Google Cloud에서 서비스 계정 키 발급:
+   
+   a. Google Cloud Console 접속: https://console.cloud.google.com
+   b. IAM 및 관리자 → 서비스 계정
+   c. 서비스 계정 생성 또는 선택
+   d. '키' 탭 → '키 추가' → 'JSON' 선택
+   e. JSON 파일 다운로드
+
+2. 다운로드한 JSON 파일을 폴더에 이동:
+   
+   mv ~/Downloads/your-project-xxxxx.json {json_folder}/
+
+3. 파일 확인:
+   
+   ls -la {json_folder}/*.json
+
+📋 JSON 파일 형식 예시:
+   {{
+     "type": "service_account",
+     "project_id": "your-project-id",
+     "private_key_id": "xxxxx",
+     "private_key": "-----BEGIN PRIVATE KEY-----\\n...",
+     "client_email": "your-service@your-project.iam.gserviceaccount.com",
+     ...
+   }}
+
+💡 팁:
+   - 여러 개의 서비스 계정 키를 사용할 수 있습니다 (API 할당량 분산)
+   - 파일명은 상관없지만 .json 확장자는 필수입니다
+
+⚠️  보안 주의사항:
+   - JSON 키 파일은 절대 Git에 커밋하지 마세요!
+   - .gitignore에 *.json 또는 .secret/ 폴더가 추가되어 있는지 확인하세요
+
+🔗 자세한 내용: https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+"""
 
     def _initialize_service_pool_parallel(self, json_files):
         """

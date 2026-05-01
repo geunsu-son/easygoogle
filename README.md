@@ -219,6 +219,27 @@ gs_utils/
 pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib pandas pyautogui pywinauto
 ```
 
+### 🔑 Google API 인증 설정
+
+Google Drive 및 Google Sheets 기능을 사용하려면 서비스 계정 JSON 키가 필요합니다.
+
+**빠른 설정:**
+```bash
+# 1. .secret 폴더 생성
+mkdir -p .secret
+
+# 2. Google Cloud에서 다운로드한 JSON 키 파일 이동
+mv ~/Downloads/your-service-account-key.json .secret/
+```
+
+**상세한 설정 방법은 [GOOGLE_API_SETUP.md](GOOGLE_API_SETUP.md)를 참고하세요.**
+
+**주요 내용:**
+- Google Cloud 서비스 계정 키 발급 방법
+- JSON 키 파일 배치 및 권한 설정
+- 친절한 오류 메시지 및 문제 해결
+- 보안 주의사항
+
 ---
 
 ## 🙌 Author
