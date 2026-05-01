@@ -16,10 +16,10 @@ def test_version():
     assert len(gs_utils.__version__) > 0
 
 
-def test_import_decorators():
-    """Test that decorators can be imported"""
-    from gs_utils import time_tracker
-    assert time_tracker is not None
+def test_import_config():
+    """Test that config can be imported"""
+    from gs_utils.config import config
+    assert config is not None
 
 
 def test_import_google_managers():
@@ -52,18 +52,11 @@ def test_import_utility_functions():
     assert convert_googledrive_id_to_url is not None
 
 
-def test_time_tracker_decorator():
-    """Test time_tracker decorator works"""
-    from gs_utils import time_tracker
-    import time
-    
-    @time_tracker
-    def sample_function():
-        time.sleep(0.1)
-        return "completed"
-    
-    result = sample_function()
-    assert result == "completed"
+def test_retry_on_error():
+    """Test retry_on_error decorator exists"""
+    from gs_utils import retry_on_error
+    assert retry_on_error is not None
+    assert callable(retry_on_error)
 
 
 def test_extract_spreadsheet_id():

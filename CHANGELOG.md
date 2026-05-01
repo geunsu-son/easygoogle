@@ -7,6 +7,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [0.4.0] - 2026-05-01
+
+### 🎯 Major Change: Focused on Google APIs
+
+**Breaking Changes**:
+- Removed `window_controler` module (Windows-specific, unrelated to Google APIs)
+- Removed `time_tracker` decorator (generic utility, not Google-specific)
+
+**Rationale**:
+- Clear library identity: "Python wrapper for Google APIs"
+- Better target audience: Google API users
+- Reduced dependencies: removed `pyautogui`, `pywinauto`
+- Improved discoverability and SEO
+
+### Changed - Library Identity
+- **New positioning**: "Simple and powerful Python wrapper for Google APIs"
+- **Core focus**: Google Drive + Google Sheets (with more Google services coming)
+- **Removed**: Generic utilities and platform-specific features
+- **Updated**: Package description, keywords, and documentation
+
+### Removed
+- `gs_utils.decorators` module
+- `gs_utils.window_controler` module  
+- Dependencies: `pyautogui>=0.9.50`, `pywinauto>=0.6.8`
+
+### Documentation
+- Rebranded README with clear value proposition
+- Updated examples focused on Google API use cases
+- Improved comparison with alternatives (gspread, PyDrive2)
+- Clearer roadmap for future Google services
+
+### Migration Guide
+**If you were using removed features:**
+- `time_tracker`: Use standard Python timing libraries (e.g., `time`, `timeit`)
+- `window_controler`: Use `pyautogui` or `pywinauto` directly
+
+**All Google API features remain unchanged and fully compatible.**
+
+---
+
 ## [0.3.0] - 2026-05-01
 
 ### Added - Config System
