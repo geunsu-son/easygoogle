@@ -1,0 +1,73 @@
+# gs_utils 설정 파일 예시
+# 이 파일을 .gs_utils_config.yaml로 복사하여 사용하세요
+
+# Google API 설정
+google:
+  # JSON 키 파일이 있는 폴더 경로
+  # 기본값: .secret
+  json_folder: ".secret"
+  
+  # G Suite 도메인 전체 위임 이메일 (선택사항)
+  # G Suite/Workspace 사용자만 필요
+  # 기본값: None
+  # delegate_email: "user@yourdomain.com"
+  
+  # API 재시도 최대 횟수
+  # 기본값: 3
+  max_retries: 3
+
+# 알림 설정 (선택사항)
+notifications:
+  # Discord webhook URL
+  # API 에러 발생 시 알림을 받으려면 설정하세요
+  # 기본값: None
+  # discord_webhook: "https://discord.com/api/webhooks/YOUR_WEBHOOK_URL"
+
+# =============================================================================
+# 사용 방법
+# =============================================================================
+#
+# 1. 이 파일을 .gs_utils_config.yaml로 복사:
+#    cp .gs_utils_config.yaml.example .gs_utils_config.yaml
+#
+# 2. 필요한 값 수정
+#
+# 3. .gitignore에 추가 (보안):
+#    echo ".gs_utils_config.yaml" >> .gitignore
+#
+# =============================================================================
+# 우선순위
+# =============================================================================
+#
+# 1. 코드에서 직접 지정 (최우선)
+#    manager = GoogleDriveManager(json_folder='/custom/path')
+#
+# 2. 환경변수
+#    export GS_UTILS_JSON_FOLDER="/custom/path"
+#
+# 3. 설정 파일 (이 파일)
+#    google:
+#      json_folder: "/custom/path"
+#
+# 4. 기본값 (최하위)
+#    .secret
+#
+# =============================================================================
+# 환경변수 목록
+# =============================================================================
+#
+# GS_UTILS_JSON_FOLDER        - JSON 키 파일 폴더
+# GS_UTILS_DELEGATE_EMAIL     - G Suite 위임 이메일
+# GS_UTILS_MAX_RETRIES        - 재시도 횟수
+# GS_UTILS_DISCORD_WEBHOOK    - Discord webhook URL
+# GS_UTILS_CONFIG             - 설정 파일 경로 (기본: .gs_utils_config.yaml)
+#
+# =============================================================================
+# 보안 주의사항
+# =============================================================================
+#
+# ⚠️  이 파일은 절대 Git에 커밋하지 마세요!
+# ⚠️  민감한 정보(webhook URL 등)는 환경변수 사용을 권장합니다
+# ⚠️  .gitignore에 .gs_utils_config.yaml 추가 필수
+#
+# =============================================================================

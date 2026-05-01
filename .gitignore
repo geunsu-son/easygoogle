@@ -57,3 +57,8 @@ Thumbs.db
 # Project specific
 .secret/*
 *.log
+
+# gs_utils config (민감한 정보 포함 가능)
+.gs_utils_config.yaml
+.gs_utils_config.yml
+.gs_utils_config.json
