@@ -1,95 +1,121 @@
-# 📦 gs_utils
+# 🔷 EasyGoogle
 
-**geunsu-son's Personal Python Utility Library**  
-자주 사용하는 함수들을 정리해, 어떤 환경에서도 바로 불러 쓸 수 있게 만든 유틸리티 패키지입니다.
+**Simple and powerful Python wrapper for Google APIs**
 
----
+Easy-to-use interfaces for Google Drive and Google Sheets with simplified authentication, friendly error messages, and flexible configuration.
 
-## 🚀 Install
+```python
+from easygoogle import Drive, Sheets
 
-GitHub에서 직접 설치:
-
-```bash
-pip install git+https://github.com/your-username/gs_utils.git
+# 3 lines to start. Zero configuration hassle.
+drive = Drive()
+sheets = Sheets()
+drive.clone_file(file_id='...', new_title='My Copy')
 ```
 
-> 로컬에서 개발 중이라면:
->
-> ```bash
-> git clone https://github.com/your-username/gs_utils.git
-> cd gs_utils
-> pip install -e .
-> ```
+[![Python Version](https://img.shields.io/badge/python-3.7+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
 
-## ✨ Included Features
+## 🚀 Quick Start
 
-| 기능 | 설명 | 함수/클래스 |
-|------|------|------|
-| ⏱️ 실행 시간 측정 | 함수 실행 전후 시간을 콘솔에 출력 | `@time_tracker` |
-| 🔄 GoogleAPI 재시도 로직 | Google API 요청 실패 시 자동 재시도 | `@retry_on_error` |
-| 🔗 GoogleDocsURL/ID 변환 | Google 스프레드시트 URL ↔ ID 변환 | `extract_spreadsheet_id()`, `convert_sheetid_to_url()` |
-| 📁 Google Drive 관리 | 파일 복제, 삭제, 폴더 생성, 업로드 | `GoogleDriveManager` |
-| 📊 Google Sheets 관리 | 데이터 읽기/쓰기, 서식 복사, 시트 관리 | `GoogleSheetManager` |
-| 🖥️ 윈도우 자동화 | 프로그램 실행, 이미지 매칭 클릭, 다이얼로그 대기 | `run_program()`, `click_by_image_match()`, `check_open_dialog()` |
+### Installation
+
+```bash
+# From PyPI (coming soon)
+pip install easygoogle
+
+# From GitHub
+pip install git+https://github.com/geunsu-son/easygoogle.git
+
+# Local development
+git clone https://github.com/geunsu-son/easygoogle.git
+cd easygoogle
+pip install -e .
+```
+
+### Configuration (Choose One Method)
+
+#### Method 1: Environment Variables (Recommended)
+```bash
+export GS_UTILS_JSON_FOLDER="/path/to/credentials"
+export GS_UTILS_DELEGATE_EMAIL="user@domain.com"  # Optional
+```
+
+#### Method 2: Config File (Optional)
+```bash
+# Create .easygoogle_config.yaml
+cp .easygoogle_config.yaml.example .easygoogle_config.yaml
+# Edit the file with your settings
+```
+
+#### Method 3: Code (Highest Priority)
+```python
+from easygoogle import GoogleDriveManager
+
+manager = GoogleDriveManager(json_folder='/custom/path')
+```
+
+### First Run
+
+```python
+from easygoogle import GoogleDriveManager
+
+# Initialize (uses config from env/file/code)
+manager = GoogleDriveManager()
+
+# Your JSON keys should be in the configured folder
+# Default: .secret/ folder
+```
+
+---
+
+## ✨ Why easygoogle?
+
+### 🎯 Core Features
+
+| Feature | Description | Class/Function |
+|---------|-------------|----------------|
+| 📁 **Google Drive** | File management, copy, delete, upload | `GoogleDriveManager` |
+| 📊 **Google Sheets** | Read/write data, format copy, sheet management | `GoogleSheetManager` |
+| 🔑 **Easy Auth** | Environment variables, config file, or code | Config system |
+| 😊 **Friendly Errors** | Clear error messages with step-by-step solutions | Built-in |
+| 🔄 **Auto Retry** | Automatic retry on API quota errors | `@retry_on_error` |
+| 🔗 **Utilities** | URL/ID conversion, data transformation | Helper functions |
+
+### 💪 Advantages over alternatives
+
+| Library | easygoogle | gspread | PyDrive2 | google-api-python-client |
+|---------|----------|---------|----------|--------------------------|
+| **Drive + Sheets** | ✅ | ❌ Sheets only | ❌ Drive only | ✅ |
+| **Easy Auth** | ✅ 3 methods | ❌ Complex | ❌ Complex | ❌ Low-level |
+| **Friendly Errors** | ✅ Detailed | ❌ | ❌ | ❌ |
+| **Config System** | ✅ Flexible | ❌ | ❌ | ❌ |
+| **Learning Curve** | ⭐ Easy | ⭐⭐ Medium | ⭐⭐ Medium | ⭐⭐⭐⭐ Hard |
 
 ---
 
 ## 🧪 Example Usage
 
-### 기본 유틸리티 함수
+### Utility Functions
 
 ```python
-from gs_utils import time_tracker, increment_month, extract_spreadsheet_id
-import time
+from easygoogle import extract_spreadsheet_id, convert_sheetid_to_url
 
-@time_tracker
-def my_task():
-    time.sleep(2)
-    return "작업 완료!"
-
-# URL에서 파일 ID 추출
+# Extract file ID from URL
 file_id = extract_spreadsheet_id('https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
-# 결과: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
+# Result: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'
 
-my_task()
-```
-
-실행 시 출력:
-```
-⏳ Function 'my_task' started at: 2025-07-01 10:00:00
-✅ Function 'my_task' finished at: 2025-07-01 10:00:02
-🕒 Total execution time: 2.0000 seconds
---------------------------------------------------
-```
-
-### 윈도우 자동화
-
-```python
-from gs_utils import run_program, click_by_image_match, check_open_dialog
-
-# 프로그램 실행 (Win+R)
-run_program('notepad.exe')
-
-# 이미지 매칭을 통한 버튼 클릭
-click_by_image_match('button.png', confidence=0.8)
-
-# 특정 화면이 나올 때까지 대기하며 클릭
-click_by_image_match(
-    image_file='login_button.png',
-    check_yn=1,
-    check_image_file='dashboard.png'
-)
-
-# 특정 다이얼로그 창이 열릴 때까지 대기
-check_open_dialog('파일 열기')
+# Convert ID to URL
+url = convert_sheetid_to_url(file_id)
+# Result: 'https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit'
 ```
 
 ### Google Drive 관리
 
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 # Google Drive 매니저 초기화
 drive_manager = GoogleDriveManager()
@@ -116,7 +142,7 @@ uploaded_file_id = drive_manager.upload_file(
 ### Google Sheets 관리
 
 ```python
-from gs_utils import GoogleSheetManager, extract_spreadsheet_id
+from easygoogle import GoogleSheetManager, extract_spreadsheet_id
 
 # Google Sheets 매니저 초기화
 sheet_manager = GoogleSheetManager()
@@ -145,30 +171,39 @@ sheet_manager.copy_sheet_format(
 )
 ```
 
-### 하이브리드 사용법
+### Complete Example: Data Pipeline
 
 ```python
-from gs_utils import (
-    GoogleSheetManager, 
-    extract_spreadsheet_id,
-    time_tracker
+from easygoogle import Drive, Sheets
+import pandas as pd
+
+# Initialize managers
+drive = Drive()
+sheets = Sheets()
+
+# Read data from Google Sheets
+df = sheets.get_dataframe_from_sheet(
+    spreadsheet_url='https://docs.google.com/spreadsheets/d/...',
+    sheet_name='RawData'
 )
 
-@time_tracker
-def automated_report_process():
-    # Google Sheets에서 데이터 가져오기
-    sheet_manager = GoogleSheetManager()
+# Process data
+df_processed = df[df['status'] == 'active'].groupby('category').sum()
 
-    spreadsheet_url = 'https://docs.google.com/spreadsheets/d/...'
-    file_id = extract_spreadsheet_id(spreadsheet_url)
-    
-    # 데이터 처리
-    df = sheet_manager.get_dataframe_from_sheet(file_id, 'Data')
-    # ... 데이터 처리 로직
-    
-    return "리포트 자동화 프로세스 완료!"
+# Write results back
+sheets.clear_and_set_worksheet(
+    spreadsheet_url='https://docs.google.com/spreadsheets/d/...',
+    sheet_name='Processed',
+    df=df_processed
+)
 
-automated_report_process()
+# Backup to Drive
+drive.upload_file(
+    file_path='backup.csv',
+    parent_folder_id='your-folder-id'
+)
+
+print("✅ Pipeline completed!")
 ```
 
 ---
@@ -176,45 +211,78 @@ automated_report_process()
 ## 📁 Package Structure
 
 ```
-gs_utils/
-├── __init__.py              # 메인 export
-├── decorators.py            # 데코레이터 (time_tracker)
-├── window_controler.py      # 윈도우 자동화 기능
+easygoogle/
+├── __init__.py              # Main exports
+├── config.py                # Configuration system
 └── google/
-    ├── __init__.py          # Google API export
-    ├── base_manager.py      # 기본 클래스 + 공통 유틸리티
-    ├── drive_manager.py     # Google Drive 관리
-    └── sheet_manager.py     # Google Sheets 관리
+    ├── __init__.py          # Google API exports
+    ├── google_client_manager.py  # Core managers
+    └── utils.py             # Utility functions
 ```
 
-### 🔧 주요 컴포넌트
+### 🔧 Core Components
 
-- **`GoogleBaseManager`**: 모든 Google API 클래스의 기본 클래스
-- **`GoogleDriveManager`**: Google Drive 파일/폴더 관리
-- **`GoogleSheetManager`**: Google Sheets 데이터 관리
-- **윈도우 자동화 함수들**: `run_program()`, `click_by_image_match()`, `check_open_dialog()`
-- **`time_tracker`**: 실행 시간 측정
-
----
-
-## 📚 Roadmap
-
-- [x] 실행 시간 측정 데코레이터 (`@time_tracker`)
-- [x] Google API 연동 함수 (편의성 ↑)
-  - [x] Google Drive 관리 (`GoogleDriveManager`)
-  - [x] Google Sheets 관리 (`GoogleSheetManager`)
-- [x] 윈도우 자동화 기능
-  - [x] 프로그램 실행 (`run_program()`)
-  - [x] 이미지 매칭 클릭 (`click_by_image_match()`)
-  - [x] 다이얼로그 대기 (`check_open_dialog()`)
-- [ ] 추가 유틸리티 함수들
+- **`GoogleDriveManager`**: Google Drive file/folder management
+- **`GoogleSheetManager`**: Google Sheets data operations
+- **`GoogleBaseManager`**: Base class for all Google API managers
+- **`Config`**: Flexible configuration system
+- **Utility functions**: URL/ID conversion, data transformation
 
 ---
 
-## 🔧 Requirements
+## 🗺️ Roadmap
 
+### ✅ Completed (v0.5.0)
+- Google Drive management
+- Google Sheets management  
+- Flexible configuration system (env/file/code)
+- Friendly error messages
+- Automatic retry on quota errors
+- Comprehensive tests (29/29 passing)
+- Package rebranding to EasyGoogle
+- Convenience aliases (Drive, Sheets)
+
+### 🚀 Coming Soon
+- [ ] Google Calendar API support
+- [ ] Google Docs API support
+- [ ] Google Gmail API support
+- [ ] Async/await support
+- [ ] Batch operations optimization
+- [ ] More examples and tutorials
+
+### 💡 Ideas
+- Google Meet API integration
+- Google Forms API integration
+- CLI tool for common operations
+
+---
+
+## 🔑 Google API Setup
+
+Google Drive 및 Google Sheets 기능을 사용하려면 서비스 계정 JSON 키가 필요합니다.
+
+### Quick Setup
 ```bash
-pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib pandas pyautogui pywinauto
+# 1. Create credentials folder
+mkdir -p .secret
+
+# 2. Download JSON key from Google Cloud Console
+# https://console.cloud.google.com → IAM → Service Accounts → Keys
+
+# 3. Move the key file
+mv ~/Downloads/your-service-account-key.json .secret/
+
+# 4. Done! The package will auto-detect the keys
+```
+
+**Detailed setup guide**: See [GOOGLE_API_SETUP.md](GOOGLE_API_SETUP.md)
+
+### Security Note
+⚠️ **Never commit JSON keys to git!**
+```bash
+# Already in .gitignore
+.secret/
+.easygoogle_config.yaml
 ```
 
 ---

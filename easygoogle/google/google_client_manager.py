@@ -13,9 +13,32 @@ import inspect
 import socket
 import datetime
 import decimal
-from labs_modules import secret_key
-from labs_modules.utils.utils import send_bot_message
 import concurrent.futures
+
+# Config system
+try:
+    from easygoogle.config import config
+    HAS_CONFIG = True
+except ImportError:
+    HAS_CONFIG = False
+    config = None
+
+# Optional dependencies
+try:
+    from labs_modules import secret_key
+    from labs_modules.utils.utils import send_bot_message
+    HAS_LABS_MODULES = True
+except ImportError:
+    HAS_LABS_MODULES = False
+    secret_key = None
+    send_bot_message = None
+
+# Discord notification support
+try:
+    import requests
+    HAS_REQUESTS = True
+except ImportError:
+    HAS_REQUESTS = False
 
 def retry_on_error(func):
     """API 요청 실패 시 .json 파일을 바꿔서 재시도하는 데코레이터"""
@@ -42,14 +65,26 @@ def retry_on_error(func):
                 bot_message_list.append(error_message)
                 self._build_next_service()
                 time.sleep(1)
-        send_bot_message('\n'.join(bot_message_list), webhook_url=secret_key.WEBHOOK_URL_DISCORD)
+        
+        # Discord 알림 전송 (우선순위: Config > labs_modules)
+        webhook_url = self.discord_webhook
+        if not webhook_url and HAS_LABS_MODULES and secret_key and hasattr(secret_key, 'WEBHOOK_URL_DISCORD'):
+            webhook_url = secret_key.WEBHOOK_URL_DISCORD
+        
+        if webhook_url:
+            self._send_discord_notification('\n'.join(bot_message_list), webhook_url)
+        
         raise RuntimeError(f"🔥 작업 실패 - 최대 시도 횟수를 초과함. - {func.__name__}")
     return wrapper
 
 class GoogleBaseManager:
     """구글 API 서비스의 기본 기능을 제공하는 클래스"""
 
-    def __init__(self, service_name, version, scope, attempt_retry = 3, json_folder = None):
+    def __init__(self, service_name, version, scope, 
+                 attempt_retry=None, 
+                 json_folder=None,
+                 delegate_email=None,
+                 discord_webhook=None):
         """
         구글 API 서비스 초기화
         
@@ -57,21 +92,59 @@ class GoogleBaseManager:
             service_name (str): 구글 API 서비스 이름
             version (str): API 버전
             scope (list): API 스코프
-            attempt_retry (int, optional): 재시도 횟수. 기본값은 3
-            json_folder (str, optional): 서비스 계정 키 파일이 있는 폴더 경로. 기본값은 None (labs_modules가 있는 폴더의 .secret 폴더)
+            attempt_retry (int, optional): 재시도 횟수 (기본값: 환경변수 또는 3)
+            json_folder (str, optional): 서비스 계정 키 파일 폴더 (기본값: 환경변수 또는 '.secret')
+            delegate_email (str, optional): G Suite 도메인 전체 위임 이메일
+            discord_webhook (str, optional): Discord webhook URL for error notifications
+        
+        Raises:
+            FileNotFoundError: JSON 키 파일을 찾을 수 없는 경우
+            
+        Example:
+            >>> # 기본 폴더 사용 (환경변수 또는 '.secret')
+            >>> manager = GoogleDriveManager()
+            
+            >>> # 커스텀 폴더 지정
+            >>> manager = GoogleDriveManager(json_folder='/path/to/credentials')
+            
+            >>> # 환경변수 사용
+            >>> import os
+            >>> os.environ['GS_UTILS_JSON_FOLDER'] = '/path/to/credentials'
+            >>> manager = GoogleDriveManager()
         """
-        if json_folder is None:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            json_folder = os.path.join(os.path.dirname(os.path.dirname(current_dir)), '.secret')
+        # Config 시스템 사용 (하위 호환성 유지)
+        if HAS_CONFIG and config:
+            json_folder = config.get_json_folder(json_folder)
+            self.delegate_email = config.get_delegate_email(delegate_email)
+            self.discord_webhook = config.get_discord_webhook(discord_webhook)
+            if attempt_retry is None:
+                attempt_retry = config.get_max_retries()
+        else:
+            # Config 없으면 기존 방식 (하위 호환성)
+            if json_folder is None:
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                json_folder = os.path.join(os.path.dirname(os.path.dirname(current_dir)), '.secret')
+            self.delegate_email = delegate_email
+            self.discord_webhook = discord_webhook
+            if attempt_retry is None:
+                attempt_retry = 3
 
         json_folder = os.path.abspath(json_folder)
+        
+        # JSON 폴더 존재 여부 확인
+        if not os.path.exists(json_folder):
+            error_msg = self._format_json_folder_not_found_error(json_folder)
+            raise FileNotFoundError(error_msg)
+        
+        # JSON 파일 검색
         self.json_files = glob.glob(os.path.join(json_folder, '*.json'))
         self.service_name = service_name
         self.version = version
         self.scope = scope
 
         if not self.json_files:
-            raise FileNotFoundError(f"No .json files found in {json_folder}")
+            error_msg = self._format_no_json_files_error(json_folder)
+            raise FileNotFoundError(error_msg)
 
         # Pre-build services in parallel for faster startup, then rotate by swapping.
         _service_pool_list = self._initialize_service_pool_parallel(self.json_files)
@@ -86,6 +159,127 @@ class GoogleBaseManager:
         self.cycle_sleep_duration = 30  # Sleep duration in seconds after each full cycle
         self._build_next_service()
 
+    def _send_discord_notification(self, message: str, webhook_url: str):
+        """
+        Discord webhook으로 알림 전송
+        
+        Args:
+            message: 전송할 메시지
+            webhook_url: Discord webhook URL
+        """
+        if not webhook_url:
+            return
+        
+        try:
+            if HAS_REQUESTS:
+                import requests
+                payload = {'content': message[:2000]}  # Discord limit
+                requests.post(webhook_url, json=payload, timeout=5)
+            elif HAS_LABS_MODULES and send_bot_message:
+                # 하위 호환성: labs_modules 사용
+                send_bot_message(message, webhook_url=webhook_url)
+        except Exception as e:
+            print(f"⚠️ Discord notification failed: {e}")
+
+    def _format_json_folder_not_found_error(self, json_folder):
+        """JSON 폴더를 찾을 수 없을 때 친절한 오류 메시지 생성"""
+        return f"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🔑 Google API 인증 키 폴더를 찾을 수 없습니다                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 찾으려고 시도한 경로:
+   {json_folder}
+
+❌ 문제:
+   위 경로에 폴더가 존재하지 않습니다.
+
+✅ 해결 방법:
+
+1. 기본 경로를 사용하는 경우 (.secret 폴더):
+   
+   # 프로젝트 루트에 .secret 폴더를 생성하세요
+   mkdir -p .secret
+   
+   # Google Cloud Console에서 다운로드한 JSON 키 파일을 이동하세요
+   mv ~/Downloads/your-service-account-key.json .secret/
+
+2. 커스텀 경로를 사용하는 경우:
+   
+   # 폴더를 생성하고 JSON 키 파일을 넣으세요
+   mkdir -p /your/custom/path
+   mv ~/Downloads/your-service-account-key.json /your/custom/path/
+   
+   # 코드에서 경로를 지정하세요
+   manager = GoogleDriveManager(json_folder='/your/custom/path')
+
+📘 Google Cloud 서비스 계정 키 발급 방법:
+
+1. Google Cloud Console 접속: https://console.cloud.google.com
+2. IAM 및 관리자 → 서비스 계정 메뉴로 이동
+3. 서비스 계정 생성 또는 기존 계정 선택
+4. '키' 탭 → '키 추가' → 'JSON' 선택
+5. 다운로드된 JSON 파일을 .secret 폴더에 이동
+
+⚠️  보안 주의사항:
+   - JSON 키 파일은 절대 Git에 커밋하지 마세요!
+   - .gitignore에 .secret/ 폴더가 추가되어 있는지 확인하세요
+   
+🔗 자세한 내용: https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+"""
+
+    def _format_no_json_files_error(self, json_folder):
+        """JSON 파일이 없을 때 친절한 오류 메시지 생성"""
+        return f"""
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    🔑 JSON 키 파일을 찾을 수 없습니다                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+📂 검색한 폴더:
+   {json_folder}
+
+❌ 문제:
+   폴더는 존재하지만 .json 확장자를 가진 파일이 없습니다.
+
+✅ 해결 방법:
+
+1. Google Cloud에서 서비스 계정 키 발급:
+   
+   a. Google Cloud Console 접속: https://console.cloud.google.com
+   b. IAM 및 관리자 → 서비스 계정
+   c. 서비스 계정 생성 또는 선택
+   d. '키' 탭 → '키 추가' → 'JSON' 선택
+   e. JSON 파일 다운로드
+
+2. 다운로드한 JSON 파일을 폴더에 이동:
+   
+   mv ~/Downloads/your-project-xxxxx.json {json_folder}/
+
+3. 파일 확인:
+   
+   ls -la {json_folder}/*.json
+
+📋 JSON 파일 형식 예시:
+   {{
+     "type": "service_account",
+     "project_id": "your-project-id",
+     "private_key_id": "xxxxx",
+     "private_key": "-----BEGIN PRIVATE KEY-----\\n...",
+     "client_email": "your-service@your-project.iam.gserviceaccount.com",
+     ...
+   }}
+
+💡 팁:
+   - 여러 개의 서비스 계정 키를 사용할 수 있습니다 (API 할당량 분산)
+   - 파일명은 상관없지만 .json 확장자는 필수입니다
+
+⚠️  보안 주의사항:
+   - JSON 키 파일은 절대 Git에 커밋하지 마세요!
+   - .gitignore에 *.json 또는 .secret/ 폴더가 추가되어 있는지 확인하세요
+
+🔗 자세한 내용: https://cloud.google.com/iam/docs/creating-managing-service-account-keys
+"""
+
     def _initialize_service_pool_parallel(self, json_files):
         """
         서비스 계정별 Google API service를 미리 병렬 초기화하여 pool로 구성합니다.
@@ -94,7 +288,16 @@ class GoogleBaseManager:
             list[dict]: [{"json_file": str, "credentials": Credentials, "service": object}, ...]
         """
         def _build_for_json(json_file):
-            credentials = Credentials.from_service_account_file(json_file, scopes=self.scope).with_subject(secret_key.DELEGATE_EMAIL)
+            credentials = Credentials.from_service_account_file(json_file, scopes=self.scope)
+            
+            # 도메인 전체 위임 (우선순위: 파라미터 > Config > labs_modules)
+            delegate_email = self.delegate_email
+            if not delegate_email and HAS_LABS_MODULES and secret_key and hasattr(secret_key, 'DELEGATE_EMAIL'):
+                delegate_email = secret_key.DELEGATE_EMAIL
+            
+            if delegate_email:
+                credentials = credentials.with_subject(delegate_email)
+            
             service = build(self.service_name, self.version, credentials=credentials)
             return {"json_file": json_file, "credentials": credentials, "service": service}
 
@@ -138,7 +341,16 @@ class GoogleBaseManager:
         next_item = self._service_pool.get(current_json)
         if next_item is None:
             # Fallback: build on-demand if pool is missing the json file for any reason.
-            self.credentials = Credentials.from_service_account_file(current_json, scopes=self.scope).with_subject(secret_key.DELEGATE_EMAIL)
+            self.credentials = Credentials.from_service_account_file(current_json, scopes=self.scope)
+            
+            # 도메인 전체 위임
+            delegate_email = self.delegate_email
+            if not delegate_email and HAS_LABS_MODULES and secret_key and hasattr(secret_key, 'DELEGATE_EMAIL'):
+                delegate_email = secret_key.DELEGATE_EMAIL
+            
+            if delegate_email:
+                self.credentials = self.credentials.with_subject(delegate_email)
+            
             self.service = build(self.service_name, self.version, credentials=self.credentials)
         else:
             self.credentials = next_item["credentials"]
