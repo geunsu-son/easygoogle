@@ -5,21 +5,53 @@
 
 ---
 
-## 🚀 Install
+## 🚀 Quick Start
 
-GitHub에서 직접 설치:
+### Installation
 
 ```bash
-pip install git+https://github.com/your-username/gs_utils.git
+# From GitHub
+pip install git+https://github.com/geunsu-son/gs_utils.git
+
+# Local development
+git clone https://github.com/geunsu-son/gs_utils.git
+cd gs_utils
+pip install -e .
 ```
 
-> 로컬에서 개발 중이라면:
->
-> ```bash
-> git clone https://github.com/your-username/gs_utils.git
-> cd gs_utils
-> pip install -e .
-> ```
+### Configuration (Choose One Method)
+
+#### Method 1: Environment Variables (Recommended)
+```bash
+export GS_UTILS_JSON_FOLDER="/path/to/credentials"
+export GS_UTILS_DELEGATE_EMAIL="user@domain.com"  # Optional
+```
+
+#### Method 2: Config File (Optional)
+```bash
+# Create .gs_utils_config.yaml
+cp .gs_utils_config.yaml.example .gs_utils_config.yaml
+# Edit the file with your settings
+```
+
+#### Method 3: Code (Highest Priority)
+```python
+from gs_utils import GoogleDriveManager
+
+manager = GoogleDriveManager(json_folder='/custom/path')
+```
+
+### First Run
+
+```python
+from gs_utils import GoogleDriveManager
+
+# Initialize (uses config from env/file/code)
+manager = GoogleDriveManager()
+
+# Your JSON keys should be in the configured folder
+# Default: .secret/ folder
+```
 
 ---
 
@@ -213,32 +245,33 @@ gs_utils/
 
 ---
 
-## 🔧 Requirements
-
-```bash
-pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib pandas pyautogui pywinauto
-```
-
-### 🔑 Google API 인증 설정
+## 🔑 Google API Setup
 
 Google Drive 및 Google Sheets 기능을 사용하려면 서비스 계정 JSON 키가 필요합니다.
 
-**빠른 설정:**
+### Quick Setup
 ```bash
-# 1. .secret 폴더 생성
+# 1. Create credentials folder
 mkdir -p .secret
 
-# 2. Google Cloud에서 다운로드한 JSON 키 파일 이동
+# 2. Download JSON key from Google Cloud Console
+# https://console.cloud.google.com → IAM → Service Accounts → Keys
+
+# 3. Move the key file
 mv ~/Downloads/your-service-account-key.json .secret/
+
+# 4. Done! The package will auto-detect the keys
 ```
 
-**상세한 설정 방법은 [GOOGLE_API_SETUP.md](GOOGLE_API_SETUP.md)를 참고하세요.**
+**Detailed setup guide**: See [GOOGLE_API_SETUP.md](GOOGLE_API_SETUP.md)
 
-**주요 내용:**
-- Google Cloud 서비스 계정 키 발급 방법
-- JSON 키 파일 배치 및 권한 설정
-- 친절한 오류 메시지 및 문제 해결
-- 보안 주의사항
+### Security Note
+⚠️ **Never commit JSON keys to git!**
+```bash
+# Already in .gitignore
+.secret/
+.gs_utils_config.yaml
+```
 
 ---
 
