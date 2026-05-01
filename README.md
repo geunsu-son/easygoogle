@@ -207,8 +207,6 @@ gs_utils/
   - [x] 프로그램 실행 (`run_program()`)
   - [x] 이미지 매칭 클릭 (`click_by_image_match()`)
   - [x] 다이얼로그 대기 (`check_open_dialog()`)
-- [ ] Google Calendar API 연동
-- [ ] Google Docs API 연동
 - [ ] 추가 유틸리티 함수들
 
 ---
