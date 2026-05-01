@@ -58,7 +58,11 @@ Thumbs.db
 .secret/*
 *.log
 
-# gs_utils config (민감한 정보 포함 가능)
+# EasyGoogle config (민감한 정보 포함 가능)
+.easygoogle_config.yaml
+.easygoogle_config.yml
+.easygoogle_config.json
+# Legacy config files (backward compatibility)
 .gs_utils_config.yaml
 .gs_utils_config.yml
 .gs_utils_config.json

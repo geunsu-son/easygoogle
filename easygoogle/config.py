@@ -1,14 +1,14 @@
 """
-gs_utils 설정 관리
+EasyGoogle 설정 관리
 
 우선순위:
 1. 코드에서 직접 지정 (가장 높음)
 2. 환경변수 (GS_UTILS_*)
-3. 설정 파일 (.gs_utils_config.yaml) - 선택적
+3. 설정 파일 (.easygoogle_config.yaml) - 선택적
 4. 기본값 (가장 낮음)
 
 사용 예시:
-    >>> from gs_utils.config import config
+    >>> from easygoogle.config import config
     >>> 
     >>> # 환경변수로 설정
     >>> import os
@@ -23,7 +23,7 @@ from typing import Optional, Dict, Any
 
 class Config:
     """
-    gs_utils 설정 관리 클래스
+    EasyGoogle 설정 관리 클래스
     
     이 클래스는 싱글톤 패턴으로 구현되어 
     애플리케이션 전체에서 하나의 인스턴스만 사용됩니다.
@@ -173,7 +173,7 @@ class Config:
             설정 딕셔너리 (없으면 빈 딕셔너리)
         """
         # 설정 파일 경로 (환경변수로 지정 가능)
-        config_path = os.getenv('GS_UTILS_CONFIG', '.gs_utils_config.yaml')
+        config_path = os.getenv('GS_UTILS_CONFIG', '.easygoogle_config.yaml')
         
         if not os.path.exists(config_path):
             return {}

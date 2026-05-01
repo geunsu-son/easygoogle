@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-gs_utils 패키지 배포 스크립트
+EasyGoogle 패키지 배포 스크립트
 
 사용법:
     python scripts/deploy.py          # PyPI에 배포
@@ -23,7 +23,7 @@ def run_command(cmd, check=True):
 def clean_build():
     """빌드 디렉토리 정리"""
     print("\n🧹 Cleaning build directories...")
-    dirs_to_remove = ['build', 'dist', 'gs_utils.egg-info']
+    dirs_to_remove = ['build', 'dist', 'easygoogle.egg-info', 'gs_utils.egg-info']
     for dir_name in dirs_to_remove:
         if os.path.exists(dir_name):
             shutil.rmtree(dir_name)
@@ -69,7 +69,7 @@ def upload_package(repository='pypi'):
 
 def get_version():
     """버전 가져오기"""
-    version_file = os.path.join('gs_utils', '__version__.py')
+    version_file = os.path.join('easygoogle', '__version__.py')
     version = {}
     with open(version_file) as f:
         exec(f.read(), version)
@@ -77,7 +77,7 @@ def get_version():
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Deploy gs_utils package')
+    parser = argparse.ArgumentParser(description='Deploy easygoogle package')
     parser.add_argument('--test', action='store_true', help='Deploy to Test PyPI')
     parser.add_argument('--skip-tests', action='store_true', help='Skip running tests')
     parser.add_argument('--skip-clean', action='store_true', help='Skip cleaning build directories')
@@ -88,7 +88,7 @@ def main():
     repo_name = "Test PyPI" if args.test else "PyPI"
     
     print("=" * 60)
-    print(f"📦 gs_utils Deployment Script")
+    print(f"📦 EasyGoogle Deployment Script")
     print(f"Version: {version}")
     print(f"Target: {repo_name}")
     print("=" * 60)
@@ -120,10 +120,10 @@ def main():
     # 설치 안내
     if repository == 'testpypi':
         print("\n📥 To install from Test PyPI:")
-        print("  pip install --index-url https://test.pypi.org/simple/ gs_utils")
+        print("  pip install --index-url https://test.pypi.org/simple/ easygoogle")
     else:
         print("\n📥 To install:")
-        print("  pip install gs_utils")
+        print("  pip install easygoogle")
         print("\n🏷️  Don't forget to create a git tag:")
         print(f"  git tag -a v{version} -m 'Release version {version}'")
         print(f"  git push origin v{version}")

@@ -44,9 +44,9 @@ setup(
     ],
     keywords='google api drive sheets gspread pydrive wrapper google-api-python-client',
     project_urls={
-        'Bug Reports': 'https://github.com/geunsu-son/gs_utils/issues',
-        'Source': 'https://github.com/geunsu-son/gs_utils',
-        'Documentation': 'https://github.com/geunsu-son/gs_utils#readme',
+        'Bug Reports': 'https://github.com/geunsu-son/easygoogle/issues',
+        'Source': 'https://github.com/geunsu-son/easygoogle',
+        'Documentation': 'https://github.com/geunsu-son/easygoogle#readme',
     },
     include_package_data=True,
 )

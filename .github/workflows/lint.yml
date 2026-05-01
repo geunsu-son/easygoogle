@@ -26,17 +26,17 @@ jobs:
     - name: Lint with flake8
       run: |
         # Stop the build if there are Python syntax errors or undefined names
-        flake8 gs_utils --count --select=E9,F63,F7,F82 --show-source --statistics
+        flake8 easygoogle --count --select=E9,F63,F7,F82 --show-source --statistics
         # Exit-zero treats all errors as warnings
-        flake8 gs_utils --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
+        flake8 easygoogle --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
       continue-on-error: true
     
     - name: Check formatting with black
       run: |
-        black --check gs_utils
+        black --check easygoogle
       continue-on-error: true
     
     - name: Check import sorting with isort
       run: |
-        isort --check-only gs_utils
+        isort --check-only easygoogle
       continue-on-error: true
