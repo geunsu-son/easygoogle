@@ -232,13 +232,15 @@ easygoogle/
 
 ## 🗺️ Roadmap
 
-### ✅ Completed (v0.3.0)
+### ✅ Completed (v0.5.0)
 - Google Drive management
 - Google Sheets management  
 - Flexible configuration system (env/file/code)
 - Friendly error messages
 - Automatic retry on quota errors
 - Comprehensive tests (29/29 passing)
+- Package rebranding to EasyGoogle
+- Convenience aliases (Drive, Sheets)
 
 ### 🚀 Coming Soon
 - [ ] Google Calendar API support
