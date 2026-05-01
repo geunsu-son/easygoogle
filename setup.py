@@ -1,27 +1,30 @@
 from setuptools import setup, find_packages
+import os
 
+# Read version from __version__.py
+version = {}
+with open(os.path.join("gs_utils", "__version__.py")) as f:
+    exec(f.read(), version)
+
+# Read long description from README.md
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
+# Read requirements from requirements.txt
+with open("requirements.txt", "r", encoding="utf-8") as f:
+    requirements = [line.strip() for line in f if line.strip() and not line.startswith("#")]
+
 setup(
     name='gs_utils',
-    version='0.2.0',
+    version=version['__version__'],
     description='geunsu-son\'s Personal Python Utility Library',
     long_description=long_description,
     long_description_content_type="text/markdown",
     author='geunsu-son',
     author_email='gnsu0705@gmail.com',
-    url='https://github.com/your-username/gs_utils',
-    packages=find_packages(),
-    install_requires=[
-        'google-api-python-client>=2.0.0',
-        'google-auth>=2.0.0',
-        'google-auth-oauthlib>=1.0.0',
-        'google-auth-httplib2>=0.1.0',
-        'pandas>=1.3.0',
-        'pyautogui>=0.9.50',
-        'pywinauto>=0.6.8',
-    ],
+    url='https://github.com/geunsu-son/gs_utils',
+    packages=find_packages(exclude=['tests', 'tests.*', 'examples', 'examples.*']),
+    install_requires=requirements,
     python_requires='>=3.7',
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -33,6 +36,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
         'Operating System :: OS Independent',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: Utilities',
@@ -41,7 +45,8 @@ setup(
     ],
     keywords='google api utility functions decorators automation windows gui',
     project_urls={
-        'Bug Reports': 'https://github.com/your-username/gs_utils/issues',
-        'Source': 'https://github.com/your-username/gs_utils',
+        'Bug Reports': 'https://github.com/geunsu-son/gs_utils/issues',
+        'Source': 'https://github.com/geunsu-son/gs_utils',
     },
+    include_package_data=True,
 )

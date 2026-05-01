@@ -1,3 +1,4 @@
+from .__version__ import __version__
 from .decorators import time_tracker
 from .google import (
     GoogleBaseManager, 
@@ -12,6 +13,7 @@ from .google import (
 )
 
 __all__ = [
+    '__version__',
     'time_tracker',
     'GoogleBaseManager',
     'GoogleDriveManager',

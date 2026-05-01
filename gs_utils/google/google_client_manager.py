@@ -13,9 +13,17 @@ import inspect
 import socket
 import datetime
 import decimal
-from labs_modules import secret_key
-from labs_modules.utils.utils import send_bot_message
 import concurrent.futures
+
+# Optional dependencies
+try:
+    from labs_modules import secret_key
+    from labs_modules.utils.utils import send_bot_message
+    HAS_LABS_MODULES = True
+except ImportError:
+    HAS_LABS_MODULES = False
+    secret_key = None
+    send_bot_message = None
 
 def retry_on_error(func):
     """API 요청 실패 시 .json 파일을 바꿔서 재시도하는 데코레이터"""
@@ -42,7 +50,8 @@ def retry_on_error(func):
                 bot_message_list.append(error_message)
                 self._build_next_service()
                 time.sleep(1)
-        send_bot_message('\n'.join(bot_message_list), webhook_url=secret_key.WEBHOOK_URL_DISCORD)
+        if HAS_LABS_MODULES and send_bot_message and secret_key:
+            send_bot_message('\n'.join(bot_message_list), webhook_url=secret_key.WEBHOOK_URL_DISCORD)
         raise RuntimeError(f"🔥 작업 실패 - 최대 시도 횟수를 초과함. - {func.__name__}")
     return wrapper
 
@@ -94,7 +103,9 @@ class GoogleBaseManager:
             list[dict]: [{"json_file": str, "credentials": Credentials, "service": object}, ...]
         """
         def _build_for_json(json_file):
-            credentials = Credentials.from_service_account_file(json_file, scopes=self.scope).with_subject(secret_key.DELEGATE_EMAIL)
+            credentials = Credentials.from_service_account_file(json_file, scopes=self.scope)
+            if HAS_LABS_MODULES and secret_key and hasattr(secret_key, 'DELEGATE_EMAIL'):
+                credentials = credentials.with_subject(secret_key.DELEGATE_EMAIL)
             service = build(self.service_name, self.version, credentials=credentials)
             return {"json_file": json_file, "credentials": credentials, "service": service}
 
@@ -138,7 +149,9 @@ class GoogleBaseManager:
         next_item = self._service_pool.get(current_json)
         if next_item is None:
             # Fallback: build on-demand if pool is missing the json file for any reason.
-            self.credentials = Credentials.from_service_account_file(current_json, scopes=self.scope).with_subject(secret_key.DELEGATE_EMAIL)
+            self.credentials = Credentials.from_service_account_file(current_json, scopes=self.scope)
+            if HAS_LABS_MODULES and secret_key and hasattr(secret_key, 'DELEGATE_EMAIL'):
+                self.credentials = self.credentials.with_subject(secret_key.DELEGATE_EMAIL)
             self.service = build(self.service_name, self.version, credentials=self.credentials)
         else:
             self.credentials = next_item["credentials"]

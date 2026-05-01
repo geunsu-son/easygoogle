@@ -1,0 +1,14 @@
+[run]
+source = gs_utils
+omit = 
+    */tests/*
+    */setup.py
+    */__pycache__/*
+
+[report]
+precision = 2
+show_missing = True
+skip_covered = False
+
+[html]
+directory = htmlcov
