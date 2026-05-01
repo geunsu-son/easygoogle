@@ -6,7 +6,7 @@ import tempfile
 
 def test_config_singleton():
     """Config는 싱글톤이어야 함"""
-    from gs_utils.config import Config, config
+    from easygoogle.config import Config, config
     
     config1 = Config()
     config2 = Config()
@@ -17,7 +17,7 @@ def test_config_singleton():
 
 def test_json_folder_default():
     """기본 json_folder는 '.secret'"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     # 환경변수 초기화
     os.environ.pop('GS_UTILS_JSON_FOLDER', None)
@@ -28,7 +28,7 @@ def test_json_folder_default():
 
 def test_json_folder_env():
     """환경변수가 기본값보다 우선"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/custom/path'
     config.reload()
@@ -41,7 +41,7 @@ def test_json_folder_env():
 
 def test_json_folder_override():
     """직접 지정이 환경변수보다 우선"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/env/path'
     config.reload()
@@ -54,7 +54,7 @@ def test_json_folder_override():
 
 def test_delegate_email_none_by_default():
     """기본값은 None"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ.pop('GS_UTILS_DELEGATE_EMAIL', None)
     config.reload()
@@ -64,7 +64,7 @@ def test_delegate_email_none_by_default():
 
 def test_delegate_email_env():
     """환경변수로 설정 가능"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_DELEGATE_EMAIL'] = 'test@example.com'
     config.reload()
@@ -77,7 +77,7 @@ def test_delegate_email_env():
 
 def test_max_retries_default():
     """기본 재시도 횟수는 3"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ.pop('GS_UTILS_MAX_RETRIES', None)
     config.reload()
@@ -87,7 +87,7 @@ def test_max_retries_default():
 
 def test_max_retries_env():
     """환경변수로 재시도 횟수 변경"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_MAX_RETRIES'] = '5'
     config.reload()
@@ -100,7 +100,7 @@ def test_max_retries_env():
 
 def test_discord_webhook():
     """Discord webhook 설정"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_DISCORD_WEBHOOK'] = 'https://discord.webhook'
     config.reload()
@@ -113,7 +113,7 @@ def test_discord_webhook():
 
 def test_config_file_yaml():
     """YAML 설정 파일 로드"""
-    from gs_utils.config import Config
+    from easygoogle.config import Config
     
     # pyyaml이 없으면 스킵
     try:
@@ -160,7 +160,7 @@ notifications:
 
 def test_priority_order():
     """우선순위 테스트: override > env > file > default"""
-    from gs_utils.config import Config
+    from easygoogle.config import Config
     
     # pyyaml이 없으면 환경변수 테스트만
     try:
@@ -207,7 +207,7 @@ def test_priority_order():
 
 def test_get_all():
     """get_all()로 현재 설정 확인"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/test/path'
     config.reload()

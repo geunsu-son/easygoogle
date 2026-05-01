@@ -7,7 +7,7 @@ import shutil
 
 def test_google_manager_no_json_folder():
     """Test error when .secret folder doesn't exist"""
-    from gs_utils import GoogleDriveManager
+    from easygoogle import GoogleDriveManager
     
     # This should raise FileNotFoundError with helpful message
     with pytest.raises(FileNotFoundError) as exc_info:
@@ -25,7 +25,7 @@ def test_google_manager_no_json_folder():
 
 def test_google_manager_empty_json_folder():
     """Test error when folder exists but has no JSON files"""
-    from gs_utils import GoogleDriveManager
+    from easygoogle import GoogleDriveManager
     
     # Create temporary empty folder
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -44,7 +44,7 @@ def test_google_manager_empty_json_folder():
 
 def test_google_manager_invalid_json():
     """Test error when JSON file is invalid"""
-    from gs_utils import GoogleSheetManager
+    from easygoogle import GoogleSheetManager
     
     # Create temporary folder with invalid JSON
     with tempfile.TemporaryDirectory() as temp_dir:
@@ -62,7 +62,7 @@ def test_google_manager_invalid_json():
 
 def test_google_manager_custom_folder():
     """Test that custom json_folder parameter works"""
-    from gs_utils import GoogleDriveManager
+    from easygoogle import GoogleDriveManager
     
     custom_path = "/custom/path/to/keys"
     
@@ -76,7 +76,7 @@ def test_google_manager_custom_folder():
 
 def test_error_message_format_folder_not_found():
     """Test that error message for folder not found is well formatted"""
-    from gs_utils import GoogleBaseManager
+    from easygoogle import GoogleBaseManager
     
     # Create a temporary instance to access the method
     class TestManager(GoogleBaseManager):
@@ -99,7 +99,7 @@ def test_error_message_format_folder_not_found():
 
 def test_error_message_format_no_json_files():
     """Test that error message for no JSON files is well formatted"""
-    from gs_utils import GoogleBaseManager
+    from easygoogle import GoogleBaseManager
     
     # Create a temporary instance to access the method
     class TestManager(GoogleBaseManager):

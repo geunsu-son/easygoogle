@@ -1,4 +1,4 @@
-# 🔧 gs_utils Config 시스템 설계 제안서
+# 🔧 easygoogle Config 시스템 설계 제안서
 
 **작성일**: 2026-05-01  
 **목적**: `secret_key.py` 의존성 제거 및 유연한 config 시스템 구축
@@ -10,7 +10,7 @@
 ### 현재 구조
 
 ```python
-# gs_utils/google/google_client_manager.py
+# easygoogle/google/google_client_manager.py
 
 try:
     from labs_modules import secret_key
@@ -63,11 +63,11 @@ except ImportError:
 #### 구조
 
 ```python
-# gs_utils/config.py
+# easygoogle/config.py
 import os
 
 class Config:
-    """gs_utils 설정 관리"""
+    """easygoogle 설정 관리"""
     
     # Google API 설정
     GOOGLE_JSON_FOLDER = os.getenv('GS_UTILS_JSON_FOLDER', '.secret')
@@ -97,7 +97,7 @@ export GS_UTILS_DISCORD_WEBHOOK="https://discord.com/api/webhooks/..."
 
 ```python
 # Python 코드에서 사용
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 # 환경변수 자동 적용
 manager = GoogleDriveManager()
@@ -131,7 +131,7 @@ manager = GoogleDriveManager(
 #### 구조
 
 ```python
-# .gs_utils_config.yaml (프로젝트 루트)
+# .easygoogle_config.yaml (프로젝트 루트)
 google:
   json_folder: ".secret"
   delegate_email: "user@domain.com"
@@ -142,11 +142,11 @@ notifications:
   
 logging:
   level: "INFO"
-  file: "gs_utils.log"
+  file: "easygoogle.log"
 ```
 
 ```python
-# gs_utils/config.py
+# easygoogle/config.py
 import yaml
 import os
 
@@ -161,7 +161,7 @@ class Config:
     
     def _load_config(self):
         """설정 파일 로드 (우선순위: 명시적 경로 > 현재 디렉토리 > 기본값)"""
-        config_path = os.getenv('GS_UTILS_CONFIG', '.gs_utils_config.yaml')
+        config_path = os.getenv('GS_UTILS_CONFIG', '.easygoogle_config.yaml')
         
         if os.path.exists(config_path):
             with open(config_path) as f:
@@ -181,7 +181,7 @@ class Config:
 #### 사용 예시
 
 ```python
-from gs_utils.config import Config
+from easygoogle.config import Config
 
 config = Config()
 json_folder = config.get('google.json_folder', '.secret')
@@ -213,7 +213,7 @@ json_folder = config.get('google.json_folder', '.secret')
    ↓
 2. 환경변수
    ↓
-3. 설정 파일 (.gs_utils_config.yaml)
+3. 설정 파일 (.easygoogle_config.yaml)
    ↓
 4. 기본값 (가장 낮음)
 ```
@@ -221,19 +221,19 @@ json_folder = config.get('google.json_folder', '.secret')
 #### 구조
 
 ```python
-# gs_utils/config.py
+# easygoogle/config.py
 import os
 from typing import Optional
 from pathlib import Path
 
 class Config:
     """
-    gs_utils 설정 관리 클래스
+    easygoogle 설정 관리 클래스
     
     우선순위:
     1. 직접 지정
     2. 환경변수 (GS_UTILS_*)
-    3. 설정 파일 (.gs_utils_config.yaml)
+    3. 설정 파일 (.easygoogle_config.yaml)
     4. 기본값
     """
     
@@ -290,7 +290,7 @@ class Config:
     
     def _load_config_file(self) -> dict:
         """설정 파일 로드"""
-        config_path = os.getenv('GS_UTILS_CONFIG', '.gs_utils_config.yaml')
+        config_path = os.getenv('GS_UTILS_CONFIG', '.easygoogle_config.yaml')
         
         if not os.path.exists(config_path):
             return {}
@@ -313,15 +313,15 @@ config = Config()
 #### 사용 예시
 
 ```python
-from gs_utils import GoogleDriveManager
-from gs_utils.config import config
+from easygoogle import GoogleDriveManager
+from easygoogle.config import config
 
 # 방법 1: 환경변수
 # export GS_UTILS_JSON_FOLDER="/path/to/creds"
 manager = GoogleDriveManager()
 
 # 방법 2: 설정 파일
-# .gs_utils_config.yaml 생성
+# .easygoogle_config.yaml 생성
 manager = GoogleDriveManager()
 
 # 방법 3: 코드에서 직접 (우선순위 최고)
@@ -378,7 +378,7 @@ manager = GoogleDriveManager(json_folder='/custom/path')
 
 **Phase 1: Config 모듈 추가 (하위 호환)**
 ```python
-# gs_utils/config.py 추가
+# easygoogle/config.py 추가
 # GoogleBaseManager 내부적으로만 사용
 # 외부 API 변경 없음
 ```
@@ -402,7 +402,7 @@ manager = GoogleDriveManager(json_folder='/custom/path')
 ### 최소 변경 구현
 
 ```python
-# gs_utils/config.py (NEW)
+# easygoogle/config.py (NEW)
 import os
 
 class Config:
@@ -424,8 +424,8 @@ config = Config()
 ```
 
 ```python
-# gs_utils/google/google_client_manager.py (MODIFIED)
-from gs_utils.config import config
+# easygoogle/google/google_client_manager.py (MODIFIED)
+from easygoogle.config import config
 
 class GoogleBaseManager:
     def __init__(self, service_name, version, scope, 
@@ -467,7 +467,7 @@ DELEGATE_EMAIL = "user@domain.com"
 WEBHOOK_URL_DISCORD = "https://..."
 ```
 
-#### After (gs_utils config)
+#### After (easygoogle config)
 
 **방법 1: 환경변수**
 ```bash
@@ -477,7 +477,7 @@ export GS_UTILS_DISCORD_WEBHOOK="https://..."
 
 **방법 2: 설정 파일**
 ```yaml
-# .gs_utils_config.yaml
+# .easygoogle_config.yaml
 google:
   delegate_email: "user@domain.com"
 notifications:
@@ -486,7 +486,7 @@ notifications:
 
 **방법 3: 코드에서**
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 manager = GoogleDriveManager(
     delegate_email="user@domain.com"
@@ -495,7 +495,7 @@ manager = GoogleDriveManager(
 
 ### 개발자 관점 (패키지 내부)
 
-1. `gs_utils/config.py` 생성
+1. `easygoogle/config.py` 생성
 2. `GoogleBaseManager.__init__()` 수정
 3. `retry_on_error` 데코레이터 수정
 4. 테스트 추가
@@ -513,7 +513,7 @@ export GS_UTILS_DISCORD_WEBHOOK="https://..."
 ```
 
 ```yaml
-# .gs_utils_config.yaml (gitignore에 추가)
+# .easygoogle_config.yaml (gitignore에 추가)
 notifications:
   discord_webhook: "https://..."
 ```
@@ -530,10 +530,10 @@ manager = GoogleDriveManager(
 ### .gitignore 추가
 
 ```gitignore
-# gs_utils config
-.gs_utils_config.yaml
-.gs_utils_config.yml
-.gs_utils_config.json
+# easygoogle config
+.easygoogle_config.yaml
+.easygoogle_config.yml
+.easygoogle_config.json
 
 # Environment files
 .env

@@ -3,7 +3,7 @@ import os
 
 # Read version from __version__.py
 version = {}
-with open(os.path.join("gs_utils", "__version__.py")) as f:
+with open(os.path.join("easygoogle", "__version__.py")) as f:
     exec(f.read(), version)
 
 # Read long description from README.md
@@ -15,7 +15,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
     requirements = [line.strip() for line in f if line.strip() and not line.startswith("#")]
 
 setup(
-    name='gs_utils',
+    name='easygoogle',
     version=version['__version__'],
     description='Simple and powerful Python wrapper for Google APIs (Drive, Sheets)',
     long_description=long_description,

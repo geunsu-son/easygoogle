@@ -1,30 +1,30 @@
-"""Basic tests for gs_utils package"""
+"""Basic tests for easygoogle package"""
 import pytest
 
 
 def test_import_package():
-    """Test that gs_utils can be imported"""
-    import gs_utils
-    assert gs_utils is not None
+    """Test that easygoogle can be imported"""
+    import easygoogle
+    assert easygoogle is not None
 
 
 def test_version():
     """Test that version is defined"""
-    import gs_utils
-    assert hasattr(gs_utils, '__version__')
-    assert isinstance(gs_utils.__version__, str)
-    assert len(gs_utils.__version__) > 0
+    import easygoogle
+    assert hasattr(easygoogle, '__version__')
+    assert isinstance(easygoogle.__version__, str)
+    assert len(easygoogle.__version__) > 0
 
 
 def test_import_config():
     """Test that config can be imported"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     assert config is not None
 
 
 def test_import_google_managers():
     """Test that Google managers can be imported"""
-    from gs_utils import (
+    from easygoogle import (
         GoogleBaseManager,
         GoogleDriveManager,
         GoogleSheetManager
@@ -36,7 +36,7 @@ def test_import_google_managers():
 
 def test_import_utility_functions():
     """Test that utility functions can be imported"""
-    from gs_utils import (
+    from easygoogle import (
         retry_on_error,
         extract_spreadsheet_id,
         convert_sheetid_to_url,
@@ -54,14 +54,14 @@ def test_import_utility_functions():
 
 def test_retry_on_error():
     """Test retry_on_error decorator exists"""
-    from gs_utils import retry_on_error
+    from easygoogle import retry_on_error
     assert retry_on_error is not None
     assert callable(retry_on_error)
 
 
 def test_extract_spreadsheet_id():
     """Test extract_spreadsheet_id function"""
-    from gs_utils import extract_spreadsheet_id
+    from easygoogle import extract_spreadsheet_id
     
     # Test with full URL
     url = "https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit"
@@ -76,7 +76,7 @@ def test_extract_spreadsheet_id():
 
 def test_convert_sheetid_to_url():
     """Test convert_sheetid_to_url function"""
-    from gs_utils import convert_sheetid_to_url
+    from easygoogle import convert_sheetid_to_url
     
     file_id = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
     result = convert_sheetid_to_url(file_id)
@@ -86,7 +86,7 @@ def test_convert_sheetid_to_url():
 
 def test_convert_to_number():
     """Test convert_to_number function"""
-    from gs_utils import convert_to_number
+    from easygoogle import convert_to_number
     
     # Test integer string
     assert convert_to_number("123") == 123
@@ -103,7 +103,7 @@ def test_convert_to_number():
 
 def test_extract_googledrive_id():
     """Test extract_googledrive_id function"""
-    from gs_utils import extract_googledrive_id
+    from easygoogle import extract_googledrive_id
     
     # Test with full URL
     url = "https://drive.google.com/file/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/view"
@@ -118,7 +118,7 @@ def test_extract_googledrive_id():
 
 def test_convert_googledrive_id_to_url():
     """Test convert_googledrive_id_to_url function"""
-    from gs_utils import convert_googledrive_id_to_url
+    from easygoogle import convert_googledrive_id_to_url
     
     file_id = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"
     result = convert_googledrive_id_to_url(file_id)

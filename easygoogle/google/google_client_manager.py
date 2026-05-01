@@ -17,7 +17,7 @@ import concurrent.futures
 
 # Config system
 try:
-    from gs_utils.config import config
+    from easygoogle.config import config
     HAS_CONFIG = True
 except ImportError:
     HAS_CONFIG = False

@@ -8,7 +8,7 @@
 ## 📋 구현 체크리스트
 
 ### Phase 1: Config 모듈 생성
-- [ ] `gs_utils/config.py` 생성
+- [ ] `easygoogle/config.py` 생성
 - [ ] Config 클래스 구현
 - [ ] 환경변수 지원
 - [ ] 설정 파일 지원 (선택적)
@@ -37,7 +37,7 @@
 ## 📁 파일 구조
 
 ```
-gs_utils/
+easygoogle/
 ├── __init__.py
 ├── __version__.py
 ├── config.py                    # NEW
@@ -48,27 +48,27 @@ gs_utils/
 │   └── utils.py
 └── ...
 
-.gs_utils_config.yaml.example     # NEW (선택적 템플릿)
+.easygoogle_config.yaml.example     # NEW (선택적 템플릿)
 ```
 
 ---
 
 ## 💻 구현 코드
 
-### 1. gs_utils/config.py (NEW)
+### 1. easygoogle/config.py (NEW)
 
 ```python
 """
-gs_utils 설정 관리
+easygoogle 설정 관리
 
 우선순위:
 1. 코드에서 직접 지정 (가장 높음)
 2. 환경변수 (GS_UTILS_*)
-3. 설정 파일 (.gs_utils_config.yaml) - 선택적
+3. 설정 파일 (.easygoogle_config.yaml) - 선택적
 4. 기본값 (가장 낮음)
 
 사용 예시:
-    >>> from gs_utils.config import config
+    >>> from easygoogle.config import config
     >>> 
     >>> # 환경변수로 설정
     >>> import os
@@ -84,7 +84,7 @@ from pathlib import Path
 
 class Config:
     """
-    gs_utils 설정 관리 클래스
+    easygoogle 설정 관리 클래스
     
     이 클래스는 싱글톤 패턴으로 구현되어 
     애플리케이션 전체에서 하나의 인스턴스만 사용됩니다.
@@ -228,13 +228,13 @@ class Config:
     
     def _load_config_file(self) -> Dict[str, Any]:
         """
-        설정 파일 로드 (.gs_utils_config.yaml)
+        설정 파일 로드 (.easygoogle_config.yaml)
         
         Returns:
             설정 딕셔너리 (없으면 빈 딕셔너리)
         """
         # 설정 파일 경로 (환경변수로 지정 가능)
-        config_path = os.getenv('GS_UTILS_CONFIG', '.gs_utils_config.yaml')
+        config_path = os.getenv('GS_UTILS_CONFIG', '.easygoogle_config.yaml')
         
         if not os.path.exists(config_path):
             return {}
@@ -281,7 +281,7 @@ config = Config()
 
 ---
 
-### 2. gs_utils/google/google_client_manager.py (MODIFIED)
+### 2. easygoogle/google/google_client_manager.py (MODIFIED)
 
 #### 변경 부분 1: Import 수정
 
@@ -299,7 +299,7 @@ except ImportError:
 
 ```python
 # AFTER
-from gs_utils.config import config
+from easygoogle.config import config
 
 # Discord 알림은 선택적 기능
 try:
@@ -408,11 +408,11 @@ def _send_discord_notification(self, message: str):
 
 ### 3. 예제 설정 파일
 
-#### .gs_utils_config.yaml.example
+#### .easygoogle_config.yaml.example
 
 ```yaml
-# gs_utils 설정 파일 예시
-# 이 파일을 .gs_utils_config.yaml로 복사하여 사용하세요
+# easygoogle 설정 파일 예시
+# 이 파일을 .easygoogle_config.yaml로 복사하여 사용하세요
 
 # Google API 설정
 google:
@@ -453,7 +453,7 @@ import tempfile
 
 def test_config_singleton():
     """Config는 싱글톤이어야 함"""
-    from gs_utils.config import Config, config
+    from easygoogle.config import Config, config
     
     config1 = Config()
     config2 = Config()
@@ -464,7 +464,7 @@ def test_config_singleton():
 
 def test_json_folder_default():
     """기본 json_folder는 '.secret'"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     # 환경변수 초기화
     os.environ.pop('GS_UTILS_JSON_FOLDER', None)
@@ -475,7 +475,7 @@ def test_json_folder_default():
 
 def test_json_folder_env():
     """환경변수가 기본값보다 우선"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/custom/path'
     config.reload()
@@ -488,7 +488,7 @@ def test_json_folder_env():
 
 def test_json_folder_override():
     """직접 지정이 환경변수보다 우선"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/env/path'
     config.reload()
@@ -501,7 +501,7 @@ def test_json_folder_override():
 
 def test_delegate_email_none_by_default():
     """기본값은 None"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ.pop('GS_UTILS_DELEGATE_EMAIL', None)
     config.reload()
@@ -511,7 +511,7 @@ def test_delegate_email_none_by_default():
 
 def test_delegate_email_env():
     """환경변수로 설정 가능"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_DELEGATE_EMAIL'] = 'test@example.com'
     config.reload()
@@ -524,7 +524,7 @@ def test_delegate_email_env():
 
 def test_max_retries_default():
     """기본 재시도 횟수는 3"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ.pop('GS_UTILS_MAX_RETRIES', None)
     config.reload()
@@ -534,7 +534,7 @@ def test_max_retries_default():
 
 def test_max_retries_env():
     """환경변수로 재시도 횟수 변경"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_MAX_RETRIES'] = '5'
     config.reload()
@@ -547,7 +547,7 @@ def test_max_retries_env():
 
 def test_config_file_yaml():
     """YAML 설정 파일 로드"""
-    from gs_utils.config import Config
+    from easygoogle.config import Config
     
     # 임시 설정 파일 생성
     with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
@@ -590,7 +590,7 @@ notifications:
 
 def test_priority_order():
     """우선순위 테스트: override > env > file > default"""
-    from gs_utils.config import Config
+    from easygoogle.config import Config
     
     # 설정 파일 생성
     with tempfile.NamedTemporaryFile(mode='w', suffix='.yaml', delete=False) as f:
@@ -618,7 +618,7 @@ def test_priority_order():
 
 def test_get_all():
     """get_all()로 현재 설정 확인"""
-    from gs_utils.config import config
+    from easygoogle.config import config
     
     os.environ['GS_UTILS_JSON_FOLDER'] = '/test/path'
     config.reload()
@@ -640,11 +640,11 @@ def test_get_all():
 ### CONFIG.md (NEW)
 
 ```markdown
-# 🔧 gs_utils 설정 가이드
+# 🔧 easygoogle 설정 가이드
 
 ## 설정 방법
 
-gs_utils는 3가지 방법으로 설정할 수 있습니다:
+easygoogle는 3가지 방법으로 설정할 수 있습니다:
 
 ### 1. 환경변수 (권장)
 
@@ -660,7 +660,7 @@ export GS_UTILS_DISCORD_WEBHOOK="https://discord.com/api/webhooks/..."
 
 ### 2. 설정 파일
 
-프로젝트 루트에 `.gs_utils_config.yaml` 파일 생성:
+프로젝트 루트에 `.easygoogle_config.yaml` 파일 생성:
 
 ```yaml
 google:
@@ -675,7 +675,7 @@ notifications:
 ### 3. 코드에서 직접
 
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 manager = GoogleDriveManager(
     json_folder='/custom/path',
@@ -696,7 +696,7 @@ manager = GoogleDriveManager(
 
 ```gitignore
 # .gitignore에 추가
-.gs_utils_config.yaml
+.easygoogle_config.yaml
 .env
 ```
 ```

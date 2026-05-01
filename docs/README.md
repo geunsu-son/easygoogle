@@ -1,6 +1,6 @@
 # 📚 Documentation
 
-This folder contains detailed technical documentation for gs_utils.
+This folder contains detailed technical documentation for easygoogle.
 
 ## Documents
 

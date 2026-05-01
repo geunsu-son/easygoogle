@@ -3,19 +3,22 @@ requires = ["setuptools>=45", "wheel", "setuptools_scm[toml]>=6.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "gs_utils"
+name = "easygoogle"
 dynamic = ["version"]
-description = "geunsu-son's Personal Python Utility Library"
+description = "Simple and powerful Python wrapper for Google APIs (Drive, Sheets)"
 readme = "README.md"
 requires-python = ">=3.7"
 license = {text = "MIT"}
 authors = [
     {name = "geunsu-son", email = "gnsu0705@gmail.com"}
 ]
-keywords = ["google", "api", "utility", "functions", "decorators", "automation", "windows", "gui"]
+keywords = ["google", "api", "drive", "sheets", "wrapper"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Office/Business",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.7",
@@ -28,12 +31,12 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/geunsu-son/gs_utils"
-"Bug Reports" = "https://github.com/geunsu-son/gs_utils/issues"
-"Source" = "https://github.com/geunsu-son/gs_utils"
+Homepage = "https://github.com/geunsu-son/easygoogle"
+"Bug Reports" = "https://github.com/geunsu-son/easygoogle/issues"
+"Source" = "https://github.com/geunsu-son/easygoogle"
 
 [tool.setuptools.dynamic]
-version = {attr = "gs_utils.__version__.__version__"}
+version = {attr = "easygoogle.__version__.__version__"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

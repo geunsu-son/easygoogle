@@ -1,15 +1,15 @@
-# 📦 gs_utils
+# 🔷 EasyGoogle
 
 **Simple and powerful Python wrapper for Google APIs**
 
 Easy-to-use interfaces for Google Drive and Google Sheets with simplified authentication, friendly error messages, and flexible configuration.
 
 ```python
-from gs_utils import GoogleDriveManager, GoogleSheetManager
+from easygoogle import Drive, Sheets
 
 # 3 lines to start. Zero configuration hassle.
-drive = GoogleDriveManager()
-sheets = GoogleSheetManager()
+drive = Drive()
+sheets = Sheets()
 drive.clone_file(file_id='...', new_title='My Copy')
 ```
 
@@ -23,12 +23,15 @@ drive.clone_file(file_id='...', new_title='My Copy')
 ### Installation
 
 ```bash
+# From PyPI (coming soon)
+pip install easygoogle
+
 # From GitHub
-pip install git+https://github.com/geunsu-son/gs_utils.git
+pip install git+https://github.com/geunsu-son/easygoogle.git
 
 # Local development
-git clone https://github.com/geunsu-son/gs_utils.git
-cd gs_utils
+git clone https://github.com/geunsu-son/easygoogle.git
+cd easygoogle
 pip install -e .
 ```
 
@@ -42,14 +45,14 @@ export GS_UTILS_DELEGATE_EMAIL="user@domain.com"  # Optional
 
 #### Method 2: Config File (Optional)
 ```bash
-# Create .gs_utils_config.yaml
-cp .gs_utils_config.yaml.example .gs_utils_config.yaml
+# Create .easygoogle_config.yaml
+cp .easygoogle_config.yaml.example .easygoogle_config.yaml
 # Edit the file with your settings
 ```
 
 #### Method 3: Code (Highest Priority)
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 manager = GoogleDriveManager(json_folder='/custom/path')
 ```
@@ -57,7 +60,7 @@ manager = GoogleDriveManager(json_folder='/custom/path')
 ### First Run
 
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 # Initialize (uses config from env/file/code)
 manager = GoogleDriveManager()
@@ -68,7 +71,7 @@ manager = GoogleDriveManager()
 
 ---
 
-## ✨ Why gs_utils?
+## ✨ Why easygoogle?
 
 ### 🎯 Core Features
 
@@ -83,7 +86,7 @@ manager = GoogleDriveManager()
 
 ### 💪 Advantages over alternatives
 
-| Library | gs_utils | gspread | PyDrive2 | google-api-python-client |
+| Library | easygoogle | gspread | PyDrive2 | google-api-python-client |
 |---------|----------|---------|----------|--------------------------|
 | **Drive + Sheets** | ✅ | ❌ Sheets only | ❌ Drive only | ✅ |
 | **Easy Auth** | ✅ 3 methods | ❌ Complex | ❌ Complex | ❌ Low-level |
@@ -98,7 +101,7 @@ manager = GoogleDriveManager()
 ### Utility Functions
 
 ```python
-from gs_utils import extract_spreadsheet_id, convert_sheetid_to_url
+from easygoogle import extract_spreadsheet_id, convert_sheetid_to_url
 
 # Extract file ID from URL
 file_id = extract_spreadsheet_id('https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms')
@@ -112,7 +115,7 @@ url = convert_sheetid_to_url(file_id)
 ### Google Drive 관리
 
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 # Google Drive 매니저 초기화
 drive_manager = GoogleDriveManager()
@@ -139,7 +142,7 @@ uploaded_file_id = drive_manager.upload_file(
 ### Google Sheets 관리
 
 ```python
-from gs_utils import GoogleSheetManager, extract_spreadsheet_id
+from easygoogle import GoogleSheetManager, extract_spreadsheet_id
 
 # Google Sheets 매니저 초기화
 sheet_manager = GoogleSheetManager()
@@ -171,12 +174,12 @@ sheet_manager.copy_sheet_format(
 ### Complete Example: Data Pipeline
 
 ```python
-from gs_utils import GoogleDriveManager, GoogleSheetManager
+from easygoogle import Drive, Sheets
 import pandas as pd
 
 # Initialize managers
-drive = GoogleDriveManager()
-sheets = GoogleSheetManager()
+drive = Drive()
+sheets = Sheets()
 
 # Read data from Google Sheets
 df = sheets.get_dataframe_from_sheet(
@@ -208,7 +211,7 @@ print("✅ Pipeline completed!")
 ## 📁 Package Structure
 
 ```
-gs_utils/
+easygoogle/
 ├── __init__.py              # Main exports
 ├── config.py                # Configuration system
 └── google/
@@ -277,7 +280,7 @@ mv ~/Downloads/your-service-account-key.json .secret/
 ```bash
 # Already in .gitignore
 .secret/
-.gs_utils_config.yaml
+.easygoogle_config.yaml
 ```
 
 ---

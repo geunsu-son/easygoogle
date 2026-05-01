@@ -1,6 +1,6 @@
-# 🚀 gs_utils 배포 가이드
+# 🚀 easygoogle 배포 가이드
 
-이 문서는 `gs_utils` 패키지를 PyPI에 배포하는 방법을 설명합니다.
+이 문서는 `easygoogle` 패키지를 PyPI에 배포하는 방법을 설명합니다.
 
 ---
 
@@ -67,11 +67,11 @@ pip install build twine pytest pytest-cov
 pytest
 
 # Coverage 리포트 포함
-pytest --cov=gs_utils --cov-report=html
+pytest --cov=easygoogle --cov-report=html
 ```
 
 ### 3. 버전 확인 및 업데이트
-`gs_utils/__version__.py` 파일에서 버전 확인:
+`easygoogle/__version__.py` 파일에서 버전 확인:
 ```python
 __version__ = '0.2.0'
 ```
@@ -110,8 +110,8 @@ python -m build
 ```
 
 빌드 후 `dist/` 폴더에 다음 파일들이 생성됩니다:
-- `gs_utils-0.2.0.tar.gz` (소스 배포)
-- `gs_utils-0.2.0-py3-none-any.whl` (휠 배포)
+- `easygoogle-0.2.0.tar.gz` (소스 배포)
+- `easygoogle-0.2.0-py3-none-any.whl` (휠 배포)
 
 #### 2단계: Test PyPI에 업로드 (선택사항)
 ```bash
@@ -120,7 +120,7 @@ python -m twine upload --repository testpypi dist/*
 
 테스트 설치:
 ```bash
-pip install --index-url https://test.pypi.org/simple/ gs_utils
+pip install --index-url https://test.pypi.org/simple/ easygoogle
 ```
 
 #### 3단계: PyPI에 업로드
@@ -135,10 +135,10 @@ python -m venv test_env
 source test_env/bin/activate  # Windows: test_env\Scripts\activate
 
 # 설치
-pip install gs_utils
+pip install easygoogle
 
 # 테스트
-python -c "import gs_utils; print(gs_utils.__version__)"
+python -c "import easygoogle; print(easygoogle.__version__)"
 ```
 
 ---
@@ -148,7 +148,7 @@ python -c "import gs_utils; print(gs_utils.__version__)"
 배포 전 확인사항:
 
 - [ ] 모든 테스트 통과 (`pytest`)
-- [ ] 버전 번호 업데이트 (`gs_utils/__version__.py`)
+- [ ] 버전 번호 업데이트 (`easygoogle/__version__.py`)
 - [ ] `README.md` 업데이트 (새로운 기능 문서화)
 - [ ] `DEVELOPMENT_HISTORY.md` 업데이트
 - [ ] Git 커밋 및 푸시

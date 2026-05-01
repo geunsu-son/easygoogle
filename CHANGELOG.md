@@ -1,9 +1,37 @@
 # Changelog
 
-All notable changes to gs_utils will be documented in this file.
+All notable changes to easygoogle will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [0.5.0] - 2026-05-01
+
+### 🔷 Rebranding: gs_utils → easygoogle
+
+**Changed:**
+- Package renamed from `gs_utils` to `easygoogle` for better clarity and discoverability
+- Repository URL changed to reflect new name
+- Added convenience aliases: `Drive` and `Sheets` for more concise imports
+- All documentation, examples, and tests updated with new branding
+
+**Migration:**
+```python
+# Old import
+from gs_utils import GoogleDriveManager, GoogleSheetManager
+
+# New import - both work!
+from easygoogle import GoogleDriveManager, GoogleSheetManager
+from easygoogle import Drive, Sheets  # Shorter aliases ✨
+```
+
+**Why the rename?**
+- `easygoogle` immediately signals what the library does
+- Better SEO and discoverability on PyPI
+- Clearer intent for new users browsing packages
+- More memorable and easier to recommend
 
 ---
 
@@ -28,8 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Updated**: Package description, keywords, and documentation
 
 ### Removed
-- `gs_utils.decorators` module
-- `gs_utils.window_controler` module  
+- `easygoogle.decorators` module
+- `easygoogle.window_controler` module  
 - Dependencies: `pyautogui>=0.9.50`, `pywinauto>=0.6.8`
 
 ### Documentation
@@ -53,7 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Flexible configuration system** with 4-level priority
   - Code > Environment Variables > Config File > Default
 - Support for environment variables (`GS_UTILS_*`)
-- Optional YAML config file (`.gs_utils_config.yaml`)
+- Optional YAML config file (`.easygoogle_config.yaml`)
 - Config class with singleton pattern
 - 12 comprehensive config tests
 
@@ -95,7 +123,7 @@ GS_UTILS_DISCORD_WEBHOOK    # Discord webhook URL
 - **GOOGLE_API_SETUP.md**: Complete Google API setup guide
 - **DEPLOYMENT.md**: PyPI deployment guide
 - **QUICKSTART.md**: Quick start guide
-- **.gs_utils_config.yaml.example**: Config template
+- **.easygoogle_config.yaml.example**: Config template
 
 ### Improved - Error Handling
 - Friendly error messages for missing JSON folder
@@ -181,7 +209,7 @@ export GS_UTILS_DELEGATE_EMAIL="user@domain.com"
 
 **Config File (Optional)**
 ```yaml
-# .gs_utils_config.yaml
+# .easygoogle_config.yaml
 google:
   json_folder: "/path/to/credentials"
   delegate_email: "user@domain.com"
@@ -189,7 +217,7 @@ google:
 
 **Code Parameters (New)**
 ```python
-from gs_utils import GoogleDriveManager
+from easygoogle import GoogleDriveManager
 
 manager = GoogleDriveManager(
     json_folder='/custom/path',
@@ -200,7 +228,7 @@ manager = GoogleDriveManager(
 
 ### Upgrading to 0.2.0 from 0.1.0
 
-- Install: `pip install gs_utils` (or `pip install -e .` for dev)
+- Install: `pip install easygoogle` (or `pip install -e .` for dev)
 - Setup JSON keys in `.secret/` folder
 - See GOOGLE_API_SETUP.md for details
 
@@ -216,7 +244,7 @@ manager = GoogleDriveManager(
 
 ## Links
 
-- **GitHub**: https://github.com/geunsu-son/gs_utils
-- **PyPI**: https://pypi.org/project/gs_utils/ (after deployment)
-- **Issues**: https://github.com/geunsu-son/gs_utils/issues
+- **GitHub**: https://github.com/geunsu-son/easygoogle
+- **PyPI**: https://pypi.org/project/easygoogle/ (after deployment)
+- **Issues**: https://github.com/geunsu-son/easygoogle/issues
 - **Documentation**: See README.md and GOOGLE_API_SETUP.md
